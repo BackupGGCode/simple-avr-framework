@@ -1,5 +1,3 @@
-#Szybki start.
-
 = Wprowadzenie =
 
 Większość ludzi podejmujących się pisania programów dla mikrokontrolerów (czy to rodziny 51, czy AVR), niezależnie od języka jaki wybiorą do osiągnięcia swojego celu, robi to w mniej więcej taki sposób:
