@@ -1,0 +1,9 @@
+#summary Quick Start - simply app
+
+= Zadanie =
+
+Aplikacja 
+
+= Schemat =
+
+
