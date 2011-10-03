@@ -1,4 +1,4 @@
-#Summary tete
+#summary Czym jest projekt i dlaczego powstał
 
 = Wprowadzenie =
 
