@@ -3,7 +3,7 @@
  */
 
 #include "avr/interrupt.h"
-#include "avrcore.h"
+#include "safcore.h"
 #include "Event.h"
 #include "Test.h"
 

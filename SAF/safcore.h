@@ -1,13 +1,13 @@
 /*
- * core.h
+ * safcore.h
  *
  *  Created on: 2010-09-29
  *      Author: rmazon
  *      Ver: 1.0
  */
 
-#ifndef CORE_H_
-#define CORE_H_
+#ifndef SAFCORE_H_
+#define SAFCORE_H_
 
 #include "Event.h"
 #include <avr/io.h>
@@ -97,4 +97,4 @@ public:
 };
 
 
-#endif /* CORE_H_ */
+#endif /* SAFCORE_H_ */
