@@ -2,7 +2,34 @@
 
 = Zadanie =
 
-Aplikacja 
+Do dyspozycji mamy jeden przycisk i jedną diodę LED (załączony schemat).
+
+1. Po kliknięciu przycisku, LED powinna miganiem nadać sygnał SOS zakodowany alfabetem morsa.
+2. Jeśli klikniemy podczas nadawania sygnału, nadawanie sygnału SOS powinno zostać przerwane.
+
 
 = Schemat =
 http://simple-avr-framework.googlecode.com/svn/wiki/schemat1/test-circuit-led_th.gif
+
+= Analiza problemu =
+Zagadnienie możemy podzielić na dwie części. Potrzebujemy pewnej logiki, która wie jak posługiwać się alfabetem morsa, oraz klas, które widzą obsługiwać LED i wiedzą jak zebrać informację o przycisku (zakładamy, że chcemy odfiltrować zakłócenia z mikro styku).
+Zatem otwieramy nowy projekt, i dodajemy plik safcore h i cpp, oraz main.cpp (można je pobrać z Downloads).
+
+Zanim zastanowimy się jak ma działać program, możemy intuicyjnie dodać trzy klasy, które będą nam potrzebne.
+
+ * SosLogic - klasa potrzebuje otrzymywać zdarzenia przycisków więc dziedziczy po klasie EventReceiver i implementować metodę onEvent(). Klasa będzie logiką, więc będzie musiała wykonywać pewien algorytm ("żyć"). W SAF klasa może wykonywać kod na dwa sposoby jako obsługa onEvent(), lub jako obsługa zdarzeń cyklicznych onTick(). W tym drugim przypadku musi implementować ClockTick i metodę onTick().
+
+ * SwitchInput - klasa będzie cyklicznie skanować stan portu pod który podłączony jest przycisk. Możliwe to jest dzięki implementacji cyklicznie wywoływanemu onTick(), więc dziedziczymy po ClickTick.
+
+
+ * LedOutput - ta klasa jedynie zapala i gasi LED, więc potrzebuje dostawać takie zdarzenia. Dziedziczymy po EventReceiver i implementujemy to w onEvent().
+
+Podzieliliśmy już naszą aplikację na moduły. Każdy z nich jest odpowiedzialny za inne zadanie. Wszystkie mają wspólny interfejs komunikacji, polegający na rozsyłaniu zdarzeń. Co nam to daje?
+
+===Zalety===
+Możemy w dowolnym momencie zmienić sposób wyzwalania logiki, lub sposób prezentowania jej wyników, dodając lub podmieniając klasy Input i/lub Output. Na przykład możemy napisać klasę, która generuje falę prostokątną o częstotliwości słyszalnej i na porcie, który obsługuje podłączyć głośnik. Ponieważ interfejs EventBus jest uniwersalny nie musimy robić nic więcej. Jedynie utworzyć obiekt w main i nauczyć go reagować na odpowiednie zdarzenia.
+
+Dzięki uniwersalnej metodzie komunikacji klas za pośrednictwem EventBus i zdarzeń, możemy testować samą klasę Output, lub samą klasę Input wysyłając odpowiednie komunikaty, bez konieczności wykonywania (lub nawet tworzenia) logiki ich działania.
+
+===Wady===
+Niestety dobrodziejstwo rozwiązań obiektowych w przypadku mikro kontrolerów, ma poważne konsekwencje. Wygenerowany kod wynikowy ma dużą objętość. Ten sam program napisany w proceduralny sposób zajmie 5-10% objętości jaką będzie zajmowała aplikacja pod SAF.
