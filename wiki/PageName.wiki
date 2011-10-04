@@ -5,5 +5,4 @@
 Aplikacja 
 
 = Schemat =
-
-
+http://simple-avr-framework.googlecode.com/svn/wiki/schemat1/test-circuit-led_th.gif
