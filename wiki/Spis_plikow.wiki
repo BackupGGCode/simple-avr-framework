@@ -1,0 +1,11 @@
+#summary Spis plików projektu
+
+Dla wersji 1.3
+
+Main.cpp - metoda main i główna pętla programu
+
+safcore.cpp safcore.h - zawiera wszystkie klasy projektu, praz definicję umożliwiające programowanie w C++ pod AVR. 
+
+Event.h - spis wszystkich używanych komunikatów (stałych). Kolejność nie jest istotna, ważna jest ich unikalność. Nazwy eventów można tworzyć w dowolny sposób, jednak polecam metodę: słowo EVENT następnie symbol klasy obsługującej oraz znaczenie ( EVENT_RS_SEND )
+
+Test.cpp Test.h - Przykładowa klasa implementująca mechanizm czasowego wykonywania usługi.
