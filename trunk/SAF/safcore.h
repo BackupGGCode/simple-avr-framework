@@ -1,13 +1,20 @@
 /*
- * safcore.h
+ * core.h
  *
  *  Created on: 2010-09-29
  *      Author: rmazon
- *      Ver: 1.0
+ *      Ver: 1.2
+ *      Diff: (1.0 -> 1.1)
+ *      * Clock::setClock
+ *		Diff: (1.1 -> 1.2)
+ *		* RingBuffer template
+ *		Diff: (1.2 -> 1.3)
+ *		* Clock interval
+ *		* Event object has int value
  */
 
-#ifndef SAFCORE_H_
-#define SAFCORE_H_
+#ifndef CORE_H_
+#define CORE_H_
 
 #include "Event.h"
 #include <avr/io.h>
@@ -22,12 +29,12 @@
 //--------------------------------------------------------------------------
 
 
-class RingBufferEventBusModel {
+class RingBufferModel {
 public:
 	uint8_t code;
-	uint8_t value;
+	int value;
 	uint8_t empty;
-	RingBufferEventBusModel() {
+	RingBufferModel() {
 		empty = 0;
 	}
 };
@@ -35,19 +42,19 @@ public:
 class RingBuffer {
 public:
 	RingBuffer();
-	void add(RingBufferEventBusModel c);
-	RingBufferEventBusModel get();
+	void add(RingBufferModel c);
+	RingBufferModel get();
 	uint8_t available();
 	void flush();
 private:
-	RingBufferEventBusModel buffer[BUFFOR_SIZE];
+	RingBufferModel buffer[BUFFOR_SIZE];
 	uint8_t head;
 	uint8_t tail;
 };
 
 class EventInterface {
 public:
-	virtual void onEvent(uint8_t code, uint8_t value)=0;
+	virtual void onEvent(uint8_t code, int value)=0;
 };
 
 class  EventBus {
@@ -60,7 +67,7 @@ class  EventBus {
 	EventBus() {index =0;}
  public:
 	static EventBus* get();
-	void send(uint8_t code, uint8_t value);
+	void send(uint8_t code, int value);
 	void send(uint8_t code);
 	void add(EventInterface* er);
 	EventBus& operator=(const EventBus&);
@@ -94,7 +101,9 @@ public:
 	void process();
 	void onTimerOvf();
 	void add(ClockTick* tick, uint16_t interval);
+	void setInterval(ClockTick* tick, uint16_t interval);
+	uint16_t getInterval(ClockTick* tick);
 };
 
 
-#endif /* SAFCORE_H_ */
+#endif /* CORE_H_ */
