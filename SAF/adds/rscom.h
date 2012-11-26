@@ -1,31 +1,29 @@
 /*
- * RSController.h
+ * rscom.h
  *
- *  Created on: 09-10-2011
- *      Author: radomir.mazon
+ *  Created on: 26-11-2012
+ *      Author: rma
  */
 
-#ifndef RSController_H_
-#define RSController_H_
+#ifndef RSCOM_H_
+#define RSCOM_H_
 
-#define SAF_ENABLE 1		//RSController może działać z SAF lub jako oddzielna klasa
 #define BAUDRATE 19200
 #define UBRRVAL ((F_CPU/(BAUDRATE*16UL))-1)
 #define EOL	((char)13)
 
-#include <avr/io.h>
-#if defined(SAF_ENABLE)
-#include "../safcore.h"
-	#if defined(EVENT_RS_SEND)
-	#else
-	#error "RSControler wspiera teraz SAF. Dodaj do pliku 'event.h' brakujace stale: EVENT_RS_SEND oraz EVENT_RS_RECEIVE";
-	#endif
+#include "../saf2core.h"
+
+#if defined(EVENT_BUTTON_DOWN)
+#else
+#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
 #endif
 
+#if defined(EVENT_BUTTON_UP)
+#else
+#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
+#endif
 
-#define RS_BUFFOR_SIZE 64
-
-//@{
 #if defined(__AVR_ATmega168__)
 
 #define _UBRRH UBRR0H
@@ -106,39 +104,11 @@
 //
 #error "Processor type not supported !"
 #endif
-//@}
 
-class RSRingBuffer {
-public:
-	RSRingBuffer(){head = tail;}
-	void add(char c);
-	char get();
-	uint8_t available();
-	void flush();
-private:
-	char buffer[RS_BUFFOR_SIZE];
-	uint8_t head;
-	uint8_t tail;
-};
+void rs_init();
+void rs_onEvent(uint8_t code, int value);
+void rs_sendLine(char* buffer);
+void _rs_onTx(char c);
+void _rs_onRx();
 
-#if defined(SAF_ENABLE)
-	class RSController : public EventReceiver {
-#else
-	class RSController  {
-#endif
-public:
-	RSController();
-	void sendLine(char* buffer);
-	void send(char string);
-	void send(char string, char isSafe);
-	static void onTx();
-	static void onRx();
-#if defined(SAF_ENABLE)
-	void onEvent(uint8_t code, int value);
-#endif
-
-private:
-	static RSRingBuffer sendRingBuffer;
-};
-
-#endif /* RSController_H_ */
+#endif /* RSCOM_H_ */

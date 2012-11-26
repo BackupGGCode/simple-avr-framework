@@ -7,11 +7,9 @@
 
 #ifndef TEST_H_
 #define TEST_H_
-#include "safcore.h"
+#include "saf2core.h"
 
-class Test : public ClockTick {
-public:
-	void onTick();
-};
+void onTestEvent(uint8_t code, int value);
+
 
 #endif /* TEST_H_ */
