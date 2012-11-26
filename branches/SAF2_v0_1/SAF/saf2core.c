@@ -14,6 +14,28 @@ void saf_init() {
 	//constructor od SAF
 	saf.list.listenerCount = 0;
 	_saf_ringbufferFlush();
+	//timer2
+	/*
+	 * set up cpu clock divider. the TIMER0 overflow ISR toggles the
+	 * output port after enough interrupts have happened.
+	 * 16MHz (FCPU) / 1024 (CS0 = 5) -> 15625 incr/sec
+	 * 15625 / 256 (number of values in TCNT0) -> 61 overflows/sec
+	 */
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega168A__)
+	TCCR2B |= _BV(CS21) | _BV(CS20);
+
+	/* Enable Timer Overflow Interrupts */
+	TIMSK2 |= _BV(TOIE2);
+
+#elif defined (__AVR_ATmega8__)
+
+	TCCR2 |= _BV(CS21) | _BV(CS20);
+
+	/* Enable Timer Overflow Interrupts */
+	TIMSK |= _BV(TOIE2);
+#endif
+	/* other set up */
+	TCNT2 = 0;
 }
 
 #if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
@@ -51,10 +73,8 @@ void saf_process() {
 		}
 }
 
-
-//To TRZEBA przeniesc bezposredni do proceduty obsugi CLOCK !!!
-void _saf_clockProc() {
-	saf_eventBusSend(EVENT_SAFTICK, 0);
+SIGNAL(TIMER2_OVF_vect) {
+	saf_eventBusSend(EVENT_SAFTICK, saf.timeCounter++);
 }
 
 void saf_eventBusSend(uint8_t code, int value) {

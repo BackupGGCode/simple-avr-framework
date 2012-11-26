@@ -66,15 +66,15 @@ void _rs_onRx() {
 }
 
 #if defined(__AVR_ATmega168__)
-	/*SIGNAL(USART_TX_vect) {
-	}*/
+	SIGNAL(USART_TX_vect) {
+	}
 
 	SIGNAL(USART_RX_vect) {
 		_rs_onRx();
 	}
 #elif defined(__AVR_ATmega8__)
-	/*SIGNAL(USART_TXC_vect) {
-	}*/
+	SIGNAL(USART_TXC_vect) {
+	}
 
 	SIGNAL(USART_RXC_vect) {
 		_rs_onRx();

@@ -12,12 +12,16 @@
 #define UBRRVAL ((F_CPU/(BAUDRATE*16UL))-1)
 #define EOL	((char)13)
 
-#include <avr/io.h>
 #include "../saf2core.h"
 
-#if defined(EVENT_RS_SEND)
+#if defined(EVENT_BUTTON_DOWN)
 #else
-#error "RSControler wspiera teraz SAF. Dodaj do pliku 'event.h' brakujace stale: EVENT_RS_SEND oraz EVENT_RS_RECEIVE";
+#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
+#endif
+
+#if defined(EVENT_BUTTON_UP)
+#else
+#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
 #endif
 
 #if defined(__AVR_ATmega168__)

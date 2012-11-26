@@ -9,6 +9,7 @@
 #define SAF2CORE_H_
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/sleep.h>
 #include "Event.h"
 
 //-----------setup
@@ -26,6 +27,8 @@
 #else
 #error "event EVENT_NULL is required (in event.h)";
 #endif
+
+#define timePrescaler(i) value%i==0
 
 //----------------
 typedef struct
@@ -51,6 +54,7 @@ typedef struct
 {
 	_saf_EventListener list;
 	_saf_RingBuffer buffer;
+	int timeCounter;
 } SAF;
 
 void saf_init();
@@ -63,8 +67,6 @@ void saf_removeEventHandler(void (*callback)(uint8_t, int));
 void saf_addEventHandler(void (*callback)(uint8_t, int));
 
 void saf_process();
-
-void _saf_clockProc();
 
 void saf_eventBusSend(uint8_t code, int value);
 
