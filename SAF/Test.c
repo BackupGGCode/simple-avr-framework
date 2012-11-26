@@ -7,6 +7,8 @@
 
 #include "Test.h"
 
-void Test::onTick() {
-
+void onTestEvent(uint8_t code, int value)
+{
+	int i=0; i++;
+    /* do stuff and things with the event */
 }
