@@ -8,16 +8,22 @@
 #include "saf2core.h"
 #include "Test.h"
 #include "adds/rscom.h"
+#include "adds/input.h"
 #include <util/delay.h>
 
 int main()
 {
+	//init...
 	saf_init();
+	input_add(_D, 2);
+	input_add(_D, 3);
+	input_add(_D, 4);
+	input_add(_D, 5);
 
-
-	//bindowanie
+	//bindowanie...
 	saf_addEventHandler(onTestEvent);
 	saf_addEventHandler(rs_onEvent);
+	saf_addEventHandler(input_onEvent);
 
 
 	/**
@@ -26,11 +32,8 @@ int main()
 	 */
 	sei();
 	while(1) {
-		//Clock::get()->process();
-		//EventBus::get()->process();
-		_delay_ms(100);
-		_saf_clockProc();
 		saf_process();
+		sleep_mode();
 	}
 }
 
