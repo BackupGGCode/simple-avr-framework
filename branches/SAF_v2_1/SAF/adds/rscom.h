@@ -8,7 +8,7 @@
 #ifndef RSCOM_H_
 #define RSCOM_H_
 
-#define BAUDRATE 19200
+#define BAUDRATE 28800
 #define UBRRVAL ((F_CPU/(BAUDRATE*16UL))-1)
 #define EOL	((char)13)
 
