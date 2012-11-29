@@ -14,6 +14,9 @@ void saf_init() {
 	//constructor od SAF
 	saf.list.listenerCount = 0;
 	_saf_ringbufferFlush();
+	saf_Event event;
+	event.code = EVENT_INIT;
+	saf_eventBusSend(event);
 	//timer2
 	/*
 	 * set up cpu clock divider. the TIMER0 overflow ISR toggles the
@@ -38,54 +41,40 @@ void saf_init() {
 	TCNT2 = 0;
 }
 
-#if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
-void saf_removeEventHandler(void (*callback)(uint8_t, int)){
-	uint8_t i;
-	  for( i = 0; i < saf.list.listenerCount; ++i )
-	  {
-	    if( saf.list.listenerList[i] == callback )
-	    {
-	    	saf.list.listenerCount--;
-	    	saf.list.listenerList[i] =
-	    			saf.list.listenerList[saf.list.listenerCount];
-	    }
-	  }
-}
-#endif
 
-void saf_addEventHandler(void (*callback)(uint8_t, int)){
-	#if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
-	 saf_removeEventHandler(callback);
-	#endif
+void saf_addEventHandler(void (*callback)(saf_Event)){
 	 saf.list.listenerList[ saf.list.listenerCount++ ] = callback;
 }
 
-/*
- * Glowna petla SAF. Sprawdzane jest czy sa jakies eventy do obslugi.
- * TODO: dodac uspienie procesowa w celu oszczedzania energii
- */
 void saf_process() {
 	while(_saf_ringbufferAvailable()) {
-			_saf_Event event = _saf_ringbufferGet();
+			saf_Event event = _saf_ringbufferGet();
 			for (uint8_t i=0; i<saf.list.listenerCount; i++) {
-				saf.list.listenerList[i](event.code, event.value);
+				saf.list.listenerList[i](event);
 			}
 		}
+	sleep_mode();
 }
 
 SIGNAL(TIMER2_OVF_vect) {
-	saf_eventBusSend(EVENT_SAFTICK, saf.timeCounter++);
+	saf_eventBusSend_(EVENT_SAFTICK, saf.timeCounter++);
 }
 
-void saf_eventBusSend(uint8_t code, int value) {
-	_saf_Event event;
-	event.code = code;
-	event.value = value;
+void saf_eventBusSend(saf_Event event) {
 	_saf_ringbufferAdd(event);
 }
 
+#if SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 0
+	void saf_eventBusSend_(uint8_t code, SAF_EVENT_VALUE_T value) {
+		saf_Event event;
+		event.code=code;
+		event.value=value;
+		_saf_ringbufferAdd(event);
+	}
+#endif
+
 //ringbuffer
-void _saf_ringbufferAdd(_saf_Event c){
+void _saf_ringbufferAdd(saf_Event c){
 	uint8_t i = (saf.buffer.head + 1) % SAF_EVENT_BUFFOR_SIZE;
 
 	saf.buffer.buffer[saf.buffer.head] = c;
@@ -94,14 +83,15 @@ void _saf_ringbufferAdd(_saf_Event c){
 	  saf.buffer.tail = (saf.buffer.tail + 1) % SAF_EVENT_BUFFOR_SIZE;
 	}
 }
-_saf_Event _saf_ringbufferGet(){
+saf_Event _saf_ringbufferGet(){
 	 // if the head isn't ahead of the tail, we don't have any characters
 	  if (saf.buffer.head == saf.buffer.tail) {
-		_saf_Event c;
+		saf_Event c;
 		c.code = EVENT_NULL;
+		c.value=0;
 	    return c;
 	  } else {
-		  _saf_Event c = saf.buffer.buffer[saf.buffer.tail];
+		  saf_Event c = saf.buffer.buffer[saf.buffer.tail];
 		  saf.buffer.tail = (saf.buffer.tail + 1) % SAF_EVENT_BUFFOR_SIZE;
 		  return c;
 	  }

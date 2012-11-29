@@ -8,7 +8,7 @@
 #ifndef RSCOM_H_
 #define RSCOM_H_
 
-#define BAUDRATE 19200
+#define BAUDRATE 28800
 #define UBRRVAL ((F_CPU/(BAUDRATE*16UL))-1)
 #define EOL	((char)13)
 
@@ -105,9 +105,10 @@
 #error "Processor type not supported !"
 #endif
 
-void rs_init();
-void rs_onEvent(uint8_t code, int value);
+
+void rs_onEvent(saf_Event event);
 void rs_sendLine(char* buffer);
+void _rs_init();
 void _rs_onTx(char c);
 void _rs_onRx();
 
