@@ -8,12 +8,12 @@
 #include "input.h"
 
 #define getSFR(i) _input_table.sfr[i]
-#define getBit(i) _input_table.bit[i]
-#define getState(i) _input_table.state[i]
+#define getBit(i) (_input_table.bit[i]&0x0F)
+#define getState(i) ((_input_table.bit[i]&0xF0)>>4)
 
 #define setSFR(i,v) _input_table.sfr[i]=v
 #define setBit(i,v) _input_table.bit[i]=v
-#define setState(i,v) _input_table.state[i]=v
+#define setState(i,v) _input_table.bit[i] = (_input_table.bit[i]&0x0F) | (v<<4)
 
 
 _input_type _input_table;
@@ -37,16 +37,22 @@ void _input_setup() {
 	}
 }
 
-void input_onEvent(uint8_t code, int value) {
-	for (uint8_t i=0; i<_input_index; i++) {
-		uint8_t curState = bit_is_clear(_SFR_IO8(getSFR(i)), getBit(i));
-		if (getState(i) != curState)
-		{
-			setState(i, curState);
-			if (curState == 1) {
-				saf_eventBusSend(EVENT_BUTTON_DOWN, i);
-			} else {
-				saf_eventBusSend(EVENT_BUTTON_UP, i);
+void input_onEvent(saf_Event event) {
+	if (event.code == EVENT_SAFTICK) {
+		for (uint8_t i=0; i<_input_index; i++) {
+			uint8_t curState = bit_is_clear(_SFR_IO8(getSFR(i)), getBit(i));
+			if (getState(i) != curState)
+			{
+				setState(i, curState);
+				saf_Event newEvent;
+				newEvent.value = i;
+				if (curState == 1) {
+					newEvent.code = EVENT_BUTTON_DOWN;
+					saf_eventBusSend(newEvent);
+				} else {
+					newEvent.code = EVENT_BUTTON_UP;
+					saf_eventBusSend(newEvent);
+				}
 			}
 		}
 	}
