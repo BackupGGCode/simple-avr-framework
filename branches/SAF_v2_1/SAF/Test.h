@@ -9,7 +9,7 @@
 #define TEST_H_
 #include "saf2core.h"
 
-void onTestEvent(uint8_t code, int value);
+void onTestEvent(saf_Event event);
 
 
 #endif /* TEST_H_ */

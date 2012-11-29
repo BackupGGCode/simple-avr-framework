@@ -9,7 +9,6 @@
 #include "Test.h"
 #include "adds/rscom.h"
 #include "adds/input.h"
-#include <util/delay.h>
 
 int main()
 {
@@ -33,7 +32,6 @@ int main()
 	sei();
 	while(1) {
 		saf_process();
-		sleep_mode();
 	}
 }
 

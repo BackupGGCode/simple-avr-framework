@@ -42,19 +42,16 @@
 #error "RSControler wspiera teraz SAF. Dodaj do pliku 'event.h' brakujace stale: EVENT_RS_SEND oraz EVENT_RS_RECEIVE";
 #endif
 
-
-//TODO: upakowac w jedna tablice...
-//dostep to tego realizowany jest przez dedykowane metody
-//trzeba tylko zmienic ich tresc...
-//wtedy nie bedzie potrzebne input_type
+/**
+ * Stan zostal zapisany w tablicy bit pod maska 0xF0
+ */
 typedef struct {
-	uint8_t state[INPUT_SIZE];
 	uint8_t bit[INPUT_SIZE];
 	uint8_t sfr[INPUT_SIZE];
 } _input_type;
 
 void input_add(uint8_t sfr, uint8_t bit);
 void _input_setup();
-void input_onEvent(uint8_t code, int value);
+void input_onEvent(saf_Event event);
 
 #endif /* INPUTBUTTONS_H_ */

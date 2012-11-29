@@ -7,8 +7,7 @@
 #define EVENT_RS_RECEIVE	3
 #define EVENT_BUTTON_DOWN	4
 #define EVENT_BUTTON_UP		5
-
-#define EVENT_TEST			6
+#define EVENT_ERROR			6
 
 
 

@@ -39,9 +39,9 @@ void rs_init() {
 
 }
 
-void rs_onEvent(uint8_t code, int value) {
-	if (code == EVENT_RS_SEND) {
-		_rs_onTx((char)value);
+void rs_onEvent(saf_Event event) {
+	if (event.code == EVENT_RS_SEND) {
+		_rs_onTx((char)event.value);
 	}
 }
 
@@ -62,7 +62,10 @@ void _rs_onRx() {
 	if (bit_is_clear(_UCSRA, _RXC)) {
 		return;
 	}
-	saf_eventBusSend(EVENT_RS_RECEIVE, _UDR);
+	saf_Event newEvent;
+	newEvent.code = EVENT_RS_RECEIVE;
+	newEvent.value = _UDR;
+	saf_eventBusSend(newEvent);
 }
 
 #if defined(__AVR_ATmega168__)
