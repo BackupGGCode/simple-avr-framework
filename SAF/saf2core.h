@@ -14,9 +14,11 @@
 
 //-----------setup
 #define SAF_LISTENER_SIZE 					8
-#define SAF_SUPPORT_REMOVE_EVENT_LISTENER 	1
 #define SAF_EVENT_BUFFOR_SIZE				16
-
+#define _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
+#define _SAF_CONFIG_EXTRA_EVENT_VALUE1	//mozesz dodac dodatkowe pola struktury saf_Event
+#define _SAF_CONFIG_EXTRA_EVENT_VALUE2	//przyklad
+#define _SAF_CONFIG_EXTRA_EVENT_VALUE3	//int extraVal;
 
 #if defined(EVENT_SAFTICK)
 #else
@@ -28,24 +30,27 @@
 #error "event EVENT_NULL is required (in event.h)";
 #endif
 
-#define timePrescaler(i) value%i==0
-
 //----------------
 typedef struct
 {
 	uint8_t code;
-	int value;
-} _saf_Event;
+	uint8_t value;
+#if _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 1
+	_SAF_CONFIG_EXTRA_EVENT_VALUE1
+	_SAF_CONFIG_EXTRA_EVENT_VALUE2
+	_SAF_CONFIG_EXTRA_EVENT_VALUE3
+#endif
+} saf_Event;
 
 typedef struct
 {
   int listenerCount;
-  void (*listenerList[SAF_LISTENER_SIZE])(uint8_t, int);
+  void (*listenerList[SAF_LISTENER_SIZE])(saf_Event);
 } _saf_EventListener;
 
 typedef struct
 {
-	_saf_Event buffer[SAF_EVENT_BUFFOR_SIZE];
+	saf_Event buffer[SAF_EVENT_BUFFOR_SIZE];
 	uint8_t head;
 	uint8_t tail;
 } _saf_RingBuffer;
@@ -59,21 +64,21 @@ typedef struct
 
 void saf_init();
 
-#if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
-void saf_removeEventHandler(void (*callback)(uint8_t, int));
-#endif
-
-
-void saf_addEventHandler(void (*callback)(uint8_t, int));
+void saf_addEventHandler(void (*callback)(saf_Event));
 
 void saf_process();
 
-void saf_eventBusSend(uint8_t code, int value);
+void saf_eventBusSend(saf_Event event);
 
 //ring buffer
-void 		_saf_ringbufferAdd(_saf_Event c);
-_saf_Event 	_saf_ringbufferGet();
+void 		_saf_ringbufferAdd(saf_Event c);
+saf_Event 	_saf_ringbufferGet();
 uint8_t 	_saf_ringbufferAvailable();
 void _saf_ringbufferFlush();
+
+//helper
+#if _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 0
+	void saf_eventBusSend_(uint8_t code, uint8_t value);
+#endif
 
 #endif /* SAF2CORE_H_ */
