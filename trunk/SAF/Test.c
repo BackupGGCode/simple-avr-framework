@@ -25,8 +25,10 @@ void onTestEvent(uint8_t code, int value)
 		DDRB = 0xff;
 		if (boolean_%2) {
 			PORTB = PORTB | 0x01;
+			saf_eventBusSend(EVENT_RS_SEND, 'X');
 		} else {
 			PORTB = PORTB & 0xFE;
+			saf_eventBusSend(EVENT_RS_SEND, '-');
 		}
 	}
 }
