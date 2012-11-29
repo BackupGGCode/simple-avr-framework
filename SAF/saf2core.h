@@ -12,13 +12,15 @@
 #include <avr/sleep.h>
 #include "Event.h"
 
-//-----------setup
+//-----------setup------------------------------------------------------
 #define SAF_LISTENER_SIZE 					8
 #define SAF_EVENT_BUFFOR_SIZE				32
-#define _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
-#define _SAF_CONFIG_EXTRA_EVENT_VALUE1	//mozesz dodac dodatkowe pola struktury saf_Event
-#define _SAF_CONFIG_EXTRA_EVENT_VALUE2	//przyklad
-#define _SAF_CONFIG_EXTRA_EVENT_VALUE3	//int extraVal;
+#define SAF_EVENT_VALUE_T					uint8_t
+#define SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
+#define SAF_CONFIG_EXTRA_EVENT_VALUE1	//mozesz dodac dodatkowe pola struktury saf_Event
+#define SAF_CONFIG_EXTRA_EVENT_VALUE2	//przyklad
+#define SAF_CONFIG_EXTRA_EVENT_VALUE3	//int extraVal;
+//----------------------------------------------------------------------
 
 #if defined(EVENT_SAFTICK)
 #else
@@ -34,11 +36,11 @@
 typedef struct
 {
 	uint8_t code;
-	uint8_t value;
-#if _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 1
-	_SAF_CONFIG_EXTRA_EVENT_VALUE1
-	_SAF_CONFIG_EXTRA_EVENT_VALUE2
-	_SAF_CONFIG_EXTRA_EVENT_VALUE3
+	SAF_EVENT_VALUE_T value;
+#if SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 1
+	SAF_CONFIG_EXTRA_EVENT_VALUE1
+	SAF_CONFIG_EXTRA_EVENT_VALUE2
+	SAF_CONFIG_EXTRA_EVENT_VALUE3
 #endif
 } saf_Event;
 
@@ -59,7 +61,7 @@ typedef struct
 {
 	_saf_EventListener list;
 	_saf_RingBuffer buffer;
-	int timeCounter;
+	SAF_EVENT_VALUE_T timeCounter;
 } SAF;
 
 void saf_init();
@@ -78,7 +80,7 @@ void _saf_ringbufferFlush();
 
 //helper
 #if _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 0
-	void saf_eventBusSend_(uint8_t code, uint8_t value);
+	void saf_eventBusSend_(uint8_t code, SAF_EVENT_VALUE_T value);
 #endif
 
 #endif /* SAF2CORE_H_ */

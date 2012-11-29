@@ -64,8 +64,8 @@ void saf_eventBusSend(saf_Event event) {
 	_saf_ringbufferAdd(event);
 }
 
-#if _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 0
-	void saf_eventBusSend_(uint8_t code, uint8_t value) {
+#if SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE == 0
+	void saf_eventBusSend_(uint8_t code, SAF_EVENT_VALUE_T value) {
 		saf_Event event;
 		event.code=code;
 		event.value=value;

@@ -24,6 +24,12 @@ int main()
 	saf_addEventHandler(rs_onEvent);
 	saf_addEventHandler(input_onEvent);
 
+	//test
+	saf_eventBusSend_(EVENT_RS_SEND, 'R');
+	saf_eventBusSend_(EVENT_RS_SEND, 'a');
+	saf_eventBusSend_(EVENT_RS_SEND, 'd');
+	saf_eventBusSend_(EVENT_RS_SEND, 'e');
+	saf_eventBusSend_(EVENT_RS_SEND, 'k');
 
 	/**
 	 * Main. Gowna petla przekazuje steroanie do SAF.
