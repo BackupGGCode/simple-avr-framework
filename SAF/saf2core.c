@@ -14,6 +14,9 @@ void saf_init() {
 	//constructor od SAF
 	saf.list.listenerCount = 0;
 	_saf_ringbufferFlush();
+	saf_Event event;
+	event.code = EVENT_INIT;
+	saf_eventBusSend(event);
 	//timer2
 	/*
 	 * set up cpu clock divider. the TIMER0 overflow ISR toggles the
@@ -38,25 +41,8 @@ void saf_init() {
 	TCNT2 = 0;
 }
 
-#if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
-void saf_removeEventHandler(void (*callback)(saf_Event)){
-	uint8_t i;
-	  for( i = 0; i < saf.list.listenerCount; ++i )
-	  {
-	    if( saf.list.listenerList[i] == callback )
-	    {
-	    	saf.list.listenerCount--;
-	    	saf.list.listenerList[i] =
-	    			saf.list.listenerList[saf.list.listenerCount];
-	    }
-	  }
-}
-#endif
 
 void saf_addEventHandler(void (*callback)(saf_Event)){
-	#if defined(SAF_SUPPORT_REMOVE_EVENT_LISTENER) && (SAF_SUPPORT_REMOVE_EVENT_LISTENER == 1)
-	 saf_removeEventHandler(callback);
-	#endif
 	 saf.list.listenerList[ saf.list.listenerCount++ ] = callback;
 }
 
