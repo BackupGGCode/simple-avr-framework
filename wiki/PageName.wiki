@@ -74,3 +74,26 @@ oraz nasz plik logiki
     }
 
 }}}
+
+
+oraz plik sterowania sterownia led
+
+{{{
+    #inlude "ledoutput.h"
+
+    void ol_onEvent(saf_Event event) {
+        if (event.code == EVENT_LED) {
+            if (event.value == 0) {
+                //zapal
+            } else {
+                //zgas
+            }
+        }
+    }
+}}}
+
+Może ten przykład wydawać się śmieszny, gdzie dominuje forma nad treścią, jednak najważniejsze jest to że wejście/wyjście (przycisk i led) oraz logika działania programu są całkowicie od siebie niezależne. 
+
+To właśnie jest najważniejsze w SAF !
+     
+    
