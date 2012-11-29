@@ -11,7 +11,7 @@
 char _rs_buffor;
 uint8_t _rs_isAvalible = 0;
 
-void rs_init() {
+void _rs_init() {
 	//Set baud rate
 	unsigned int ubrr = UBRRVAL;
 	_UBRRH = (unsigned char)(ubrr>>8);
@@ -42,6 +42,9 @@ void rs_init() {
 void rs_onEvent(saf_Event event) {
 	if (event.code == EVENT_RS_SEND) {
 		_rs_onTx((char)event.value);
+	}
+	if (event.code == EVENT_INIT) {
+		_rs_init();
 	}
 }
 

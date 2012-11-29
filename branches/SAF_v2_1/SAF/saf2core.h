@@ -14,7 +14,7 @@
 
 //-----------setup
 #define SAF_LISTENER_SIZE 					8
-#define SAF_EVENT_BUFFOR_SIZE				16
+#define SAF_EVENT_BUFFOR_SIZE				32
 #define _SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
 #define _SAF_CONFIG_EXTRA_EVENT_VALUE1	//mozesz dodac dodatkowe pola struktury saf_Event
 #define _SAF_CONFIG_EXTRA_EVENT_VALUE2	//przyklad

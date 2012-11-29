@@ -105,9 +105,10 @@
 #error "Processor type not supported !"
 #endif
 
-void rs_init();
+
 void rs_onEvent(saf_Event event);
 void rs_sendLine(char* buffer);
+void _rs_init();
 void _rs_onTx(char c);
 void _rs_onRx();
 
