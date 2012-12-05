@@ -1,0 +1,62 @@
+#summary API
+
+= Introduction =
+
+Lista metod dostępnych w Simple AVR Framework
+
+= API 2.2 =
+
+== SAF == 
+ * setup - znajduje się w pliku saf2core.h
+  * SAF_LISTENER_SIZE
+  * SAF_EVENT_BUFFOR_SIZE
+  * SAF_EVENT_VALUE_T
+  * SAF_TIMER_ENABLED
+  * SAF_TIMER_SIZE
+  * SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
+  * SAF_CONFIG_EXTRA_EVENT_VALUE1(,2 i 3)
+ * zdarzenia - znajduja sie w pliku Event.h
+  * EVENT_NULL
+  * EVENT_INIT
+  * EVENT_START_APP
+  * EVENT_SAFTICK
+  * EVENT_ERROR
+ * struktura saf_Event
+ * saf_Event()
+ * saf_addEventHandler()
+ * saf_process()
+ * saf_eventBusSend(saf_Event event)
+ * saf_startTimer(uint16_t interval, uint8_t eventCode, uint8_t value)
+
+== ADDS/INPUT ==
+
+== ADDS/RSCOM ==
+
+== ADDS/ALFANUMERIC_LCD ==
+
+== main() ==
+
+Przykład podstawowej metody main()
+
+{{{
+#include "saf2core.h"
+#include "mylogic.h"
+
+int main()
+{
+	//init...
+	saf_init();
+
+	//bind...
+	saf_addEventHandler(mylogic_onEvent);
+
+	/**
+	 * Main. Gowna petla przekazuje steroanie do SAF.
+	 * Nie nalezy jej zmieniac...
+	 */
+	while(1) {
+		saf_process();
+	}
+}
+
+}}}
