@@ -1,7 +1,5 @@
 #summary API
 
-= Introduction =
-
 Lista metod dostępnych w Simple AVR Framework
 
 = API 2.2 =
