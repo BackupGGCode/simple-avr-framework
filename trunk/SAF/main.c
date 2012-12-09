@@ -35,7 +35,6 @@ int main()
 	 * Main. Gowna petla przekazuje steroanie do SAF.
 	 * Nie nalezy jej zmieniac...
 	 */
-	sei();
 	while(1) {
 		saf_process();
 	}

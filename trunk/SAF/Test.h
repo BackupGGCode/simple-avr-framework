@@ -11,5 +11,4 @@
 
 void onTestEvent(saf_Event event);
 
-
 #endif /* TEST_H_ */
