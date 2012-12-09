@@ -1,10 +1,9 @@
 #include "Tds18b20.h"
 
-void ds_init()
+void _ds_init()
 {
 	PORTC |= _BV(PINPORT);
 	DDRC |= _BV(PINPORT);		//mozliwosc pisania
-	_ds_waitU(500);
 }
 
 void _ds_waitU(uint16_t time)
@@ -17,7 +16,6 @@ void _ds_waitU(uint16_t time)
 int8_t _ds_resetPresence()
 {
 	int8_t result=0;
-	ds_init();
 	
 	PORTC &= ~_BV(PINPORT);	//zerowy reset 500us
 	_ds_waitU(600);
@@ -37,8 +35,6 @@ int8_t _ds_resetPresence()
 	if ( counter == 0 )
 	{
 		result = -1;	//time's out,
-	//Error!! Time's out
-
 	}
 	else
 	{
@@ -51,7 +47,6 @@ int8_t _ds_resetPresence()
 		}
 	}
 	_ds_waitU(480-counter);
-	//Oczywiscie zostawione czytanie z pullup
 	return result;
 }
 
@@ -131,7 +126,7 @@ uint8_t _ds_readByte()
 	return result;
 }
 
-void _ds_setResolution(uint8_t res)
+/*void ds_setResolution(uint8_t res)
 {
 	//SetResolution
 	PORTC |= _BV(PINPORT);
@@ -159,12 +154,14 @@ void _ds_setResolution(uint8_t res)
 
 	//Skonczenie procedury SetResolution
 }
-
-uint16_t ds_getTemp()
+*/
+int16_t ds_getTemp()
 {
+	cli();
 	if (_ds_resetPresence()==-1)
 	{
-		return 0xffff;
+		sei();
+		return 0xff92;
 	}
 	//	Skip ROM
 	_ds_writeByte(0xCC);
@@ -184,19 +181,21 @@ uint16_t ds_getTemp()
 
 	_ds_resetPresence();
 	//	sprawdzenie CRC
-	if (checkCRC(scratchpad,9) != 0)
+	if (_checkCRC(scratchpad,9) != 0)
 	{
-		return 0xffff;
+		sei();
+		return 0xff92;
 	}
-	uint16_t result;
+	int16_t result;
 	uint8_t *tab = (uint8_t*)&result;
 	tab[0] = scratchpad[0];
 	tab[1] = scratchpad[1];
     //Skonczenie czytania temp
+	sei();
 	return result;
 }
 
-uint8_t checkCRC(uint8_t *tab,int tab_size)
+uint8_t _checkCRC(uint8_t *tab,int tab_size)
 {
 	uint8_t crc = 0, i;
 	for (i = 0; i < tab_size; i++)
@@ -204,20 +203,30 @@ uint8_t checkCRC(uint8_t *tab,int tab_size)
 	return crc; // must be 0
 }
 
-char* ds_tempToAscii(uint16_t temperaturka, char* buffor)
+char* ds_tempToAscii(int16_t temp, char* buffor)
 {
-	if (temperaturka == 0xffff) {
-		strcpy(buffor, "ERROR");
+	strcpy(buffor, "??,?\xdf""C  ");
+
+	if (temp == 0xff92) {
 		return buffor;
 	}
-	char a[2];
-	double temp = (double)temperaturka;
-	temp = temp / 2;
-	itoa(temp, buffor, 10);
-	strcat(buffor, ",");
-	temp -= (int)temp;
-	temp *= 10;
-	itoa(temp, a, 10);
-	strcat(buffor, a);
+	itoa(temp/2, buffor, 10);
+	if (temp%2!=0) {
+		strcat(buffor, ",5\xdf""C ");
+	} else {
+		strcat(buffor, ",0\xdf""C ");
+	}
+	if (temp == 0xffff) {
+		char buff[10];
+		strcpy(buff, buffor);
+		strcpy(buffor+1, buff);
+		buffor[0] = '-';
+	}
 	return buffor;
+}
+
+void ds_onEvent(saf_Event e) {
+	if (e.code == EVENT_INIT) {
+		_ds_init();
+	}
 }
