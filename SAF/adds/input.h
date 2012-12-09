@@ -15,7 +15,7 @@
  * przyklad dla portu PORTD bit 0
  * input_add(_D, 0);
  */
-#define INPUT_SIZE 4
+#define INPUT_SIZE 2
 #define _DDR 1
 #define _PORT 2
 
@@ -30,16 +30,6 @@
 #define _D    0x10
 #else
 #error "Processor type not supported !"
-#endif
-
-#if defined(EVENT_RS_SEND)
-#else
-#error "RSControler wspiera teraz SAF. Dodaj do pliku 'event.h' brakujace stale: EVENT_RS_SEND oraz EVENT_RS_RECEIVE";
-#endif
-
-#if defined(EVENT_RS_RECEIVE)
-#else
-#error "RSControler wspiera teraz SAF. Dodaj do pliku 'event.h' brakujace stale: EVENT_RS_SEND oraz EVENT_RS_RECEIVE";
 #endif
 
 /**
