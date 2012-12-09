@@ -12,10 +12,12 @@ SAF saf;
 
 void saf_init() {
 	//constructor od SAF
+	saf.startApp = 0;
 	saf.list.listenerCount = 0;
 	_saf_ringbufferFlush();
 	saf_Event event;
 	event.code = EVENT_INIT;
+	//event.value = 0 // nie istotne
 	saf_eventBusSend(event);
 	//timer2
 	/*
@@ -39,6 +41,9 @@ void saf_init() {
 #endif
 	/* other set up */
 	TCNT2 = 0;
+#if SAF_TIMER_ENABLED == 1
+	_saf_timerInit();
+#endif
 }
 
 
@@ -53,11 +58,26 @@ void saf_process() {
 				saf.list.listenerList[i](event);
 			}
 		}
-	sleep_mode();
+#if SAF_TIMER_ENABLED == 1
+	_saf_timerProcess();
+#endif
+	//start application
+	if (saf.startApp == 0) {
+		saf.startApp = 1;
+		saf_Event event;
+		event.code = EVENT_START_APP;
+		//event.value = 0 // nie istotne
+		saf_eventBusSend(event);
+	} else {
+		sei();
+		sleep_mode();
+	}
 }
 
 SIGNAL(TIMER2_OVF_vect) {
+#if SAF_TICK_ENABLED == 1
 	saf_eventBusSend_(EVENT_SAFTICK, saf.timeCounter++);
+#endif
 }
 
 void saf_eventBusSend(saf_Event event) {
@@ -84,11 +104,10 @@ void _saf_ringbufferAdd(saf_Event c){
 	}
 }
 saf_Event _saf_ringbufferGet(){
-	 // if the head isn't ahead of the tail, we don't have any characters
 	  if (saf.buffer.head == saf.buffer.tail) {
 		saf_Event c;
 		c.code = EVENT_NULL;
-		c.value=0;
+		//c.value=0; //nie istotne
 	    return c;
 	  } else {
 		  saf_Event c = saf.buffer.buffer[saf.buffer.tail];
@@ -102,3 +121,37 @@ uint8_t 	_saf_ringbufferAvailable() {
 void _saf_ringbufferFlush(){
 	saf.buffer.head = saf.buffer.tail;
 }
+
+#if SAF_TIMER_ENABLED == 1
+_saf_timer_t _saf_timer[SAF_TIMER_SIZE];
+
+void _saf_timerInit() {
+	for (uint8_t i=0; i<SAF_TIMER_SIZE;i ++) {
+		_saf_timer[i].couter = 0;
+	}
+}
+void saf_startTimer(uint16_t interval, uint8_t eventCode, uint8_t value) {
+	for (uint8_t i=0; i<SAF_TIMER_SIZE; i++) {
+		if (_saf_timer[i].couter == 0) {
+			_saf_timer[i].couter = interval;
+			_saf_timer[i].eventCode = eventCode;
+			_saf_timer[i].value= value;
+			break;
+		}
+	}
+}
+
+void _saf_timerProcess() {
+	for (uint8_t i=0; i<SAF_TIMER_SIZE; i++) {
+			if (_saf_timer[i].couter > 0) {
+				if (_saf_timer[i].couter == 1) {
+					saf_Event event;
+					event.code = _saf_timer[i].eventCode;
+					event.value = _saf_timer[i].value;
+					saf_eventBusSend(event);
+				}
+				_saf_timer[i].couter--;
+			}
+	}
+}
+#endif
