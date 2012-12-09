@@ -15,7 +15,6 @@
 #define setBit(i,v) _input_table.bit[i]=v
 #define setState(i,v) _input_table.bit[i] = (_input_table.bit[i]&0x0F) | (v<<4)
 
-
 _input_type _input_table;
 uint8_t _input_index = 0;
 
