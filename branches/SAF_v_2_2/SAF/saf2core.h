@@ -1,7 +1,7 @@
 /*
  * saf2core.h
  *
- *  Created on: 21-11-2012
+ *  Version: 2.2
  *      Author: radomir mazon
  */
 
