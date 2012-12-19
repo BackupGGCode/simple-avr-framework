@@ -11,11 +11,11 @@ uint8_t boolean_ =0;
 
 void onTestEvent(saf_Event event)
 {
-	if (event.code == EVENT_BUTTON_DOWN && event.value ==0) {
+	if (event.code == EVENT_IN_DOWN && event.value ==0) {
 		DDRB = 0xff;
 		PORTB = PORTB | 2;
 	}
-	if (event.code == EVENT_BUTTON_DOWN && event.value ==1) {
+	if (event.code == EVENT_IN_DOWN && event.value ==1) {
 			DDRB = 0xff;
 			PORTB = PORTB & ~(2);
 	}
