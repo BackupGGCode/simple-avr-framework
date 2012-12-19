@@ -17,7 +17,7 @@ void saf_init() {
 	_saf_ringbufferFlush();
 	saf_Event event;
 	event.code = EVENT_INIT;
-	//event.value = 0 // nie istotne
+	event.value = 0;
 	saf_eventBusSend(event);
 	//timer2
 	/*
@@ -66,7 +66,7 @@ void saf_process() {
 		saf.startApp = 1;
 		saf_Event event;
 		event.code = EVENT_START_APP;
-		//event.value = 0 // nie istotne
+		event.value = 0;
 		saf_eventBusSend(event);
 	} else {
 		sei();
@@ -107,7 +107,7 @@ saf_Event _saf_ringbufferGet(){
 	  if (saf.buffer.head == saf.buffer.tail) {
 		saf_Event c;
 		c.code = EVENT_NULL;
-		//c.value=0; //nie istotne
+		c.value = 0;
 	    return c;
 	  } else {
 		  saf_Event c = saf.buffer.buffer[saf.buffer.tail];
