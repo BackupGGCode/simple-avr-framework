@@ -38,7 +38,7 @@
 typedef struct {
 	uint8_t bit[INPUT_SIZE];
 	uint8_t sfr[INPUT_SIZE];
-} _input_type;
+} _io_type;
 
 void input_add(uint8_t sfr, uint8_t bit);
 void _input_setup();
