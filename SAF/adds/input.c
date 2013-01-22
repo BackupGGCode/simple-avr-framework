@@ -15,7 +15,7 @@
 #define setBit(i,v) _input_table.bit[i]=v
 #define setState(i,v) _input_table.bit[i] = (_input_table.bit[i]&0x0F) | (v<<4)
 
-_input_type _input_table;
+_io_type _input_table;
 uint8_t _input_index = 0;
 
 void input_add(uint8_t sfr, uint8_t bit) {
@@ -46,10 +46,10 @@ void input_onEvent(saf_Event event) {
 				saf_Event newEvent;
 				newEvent.value = i;
 				if (curState == 1) {
-					newEvent.code = EVENT_BUTTON_DOWN;
+					newEvent.code = EVENT_IN_DOWN;
 					saf_eventBusSend(newEvent);
 				} else {
-					newEvent.code = EVENT_BUTTON_UP;
+					newEvent.code = EVENT_IN_UP;
 					saf_eventBusSend(newEvent);
 				}
 			}
