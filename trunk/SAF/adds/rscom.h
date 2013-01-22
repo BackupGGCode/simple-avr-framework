@@ -14,14 +14,14 @@
 
 #include "../saf2core.h"
 
-#if defined(EVENT_BUTTON_DOWN)
+#if defined(EVENT_RS_SEND)
 #else
-#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
+#error "EVENT_RS_SEND and EVENT_RS_RECEIVE are required";
 #endif
 
-#if defined(EVENT_BUTTON_UP)
+#if defined(EVENT_RS_RECEIVE)
 #else
-#error "EVENT_BUTTON_DOWN and EVENT_BUTTON_UP are required";
+#error "EVENT_RS_SEND and EVENT_RS_RECEIVE are required";
 #endif
 
 #if defined(__AVR_ATmega168__)
