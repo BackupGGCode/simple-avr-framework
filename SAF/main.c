@@ -9,6 +9,7 @@
 #include "Test.h"
 #include "adds/rscom.h"
 #include "adds/input.h"
+#include "adds/output.h"
 
 int main()
 {
@@ -18,11 +19,14 @@ int main()
 	input_add(_D, 3);
 	input_add(_D, 4);
 	input_add(_D, 5);
+	output_add(_B, 5, 0);
+	output_add(_B, 0, 1);
 
 	//bindowanie...
 	saf_addEventHandler(onTestEvent);
 	saf_addEventHandler(rs_onEvent);
 	saf_addEventHandler(input_onEvent);
+	saf_addEventHandler(output_onEvent);
 
 	//test
 	saf_eventBusSend_(EVENT_RS_SEND, 'R');
