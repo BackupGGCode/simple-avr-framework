@@ -1,7 +1,7 @@
 /*
  * saf2core.h
  *
- *  Version: 2.3
+ *  Version: 2.4
  *      Author: radomir mazon
  */
 
@@ -17,8 +17,8 @@
 #define SAF_EVENT_BUFFOR_SIZE				32
 #define SAF_EVENT_VALUE_T					uint8_t
 #define SAF_TIMER_ENABLED					1
-#define SAF_TIMER_SIZE						4
-#define SAF_TICK_ENABLED					0
+#define SAF_TIMER_SIZE						16
+#define SAF_TICK_ENABLED					1
 #define SAF_CONFIG_EXTRA_EVENT_VALUE_ENABLE 0
 #define SAF_CONFIG_EXTRA_EVENT_VALUE1	//mozesz dodac dodatkowe pola struktury saf_Event
 #define SAF_CONFIG_EXTRA_EVENT_VALUE2	//przyklad
@@ -107,8 +107,22 @@ void _saf_ringbufferFlush();
 		uint8_t value;
 	} _saf_timer_t;
 	void saf_startTimer(uint16_t interval, uint8_t eventCode, uint8_t value);
+	void saf_cancelTimer(uint8_t eventCode, uint8_t value);
 	void _saf_timerProcess();
 	void _saf_timerInit();
+#endif
+
+//dla modulow input i output
+#if defined(__AVR_ATmega168__)
+#define _B    0x03
+#define _C    0x06
+#define _D    0x09
+#elif defined(__AVR_ATmega8__)
+#define _B    0x16
+#define _C    0x13
+#define _D    0x10
+#else
+#error "Processor type not supported !"
 #endif
 
 #endif /* SAF2CORE_H_ */

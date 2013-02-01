@@ -130,12 +130,28 @@ void _saf_timerInit() {
 		_saf_timer[i].couter = 0;
 	}
 }
+
 void saf_startTimer(uint16_t interval, uint8_t eventCode, uint8_t value) {
+	uint8_t index = 0xff;
 	for (uint8_t i=0; i<SAF_TIMER_SIZE; i++) {
 		if (_saf_timer[i].couter == 0) {
-			_saf_timer[i].couter = interval;
-			_saf_timer[i].eventCode = eventCode;
-			_saf_timer[i].value= value;
+			index = i;
+		}
+		if (_saf_timer[i].value == value) {
+			break;
+		}
+	}
+	if (index != 0xff) {
+		_saf_timer[index].couter = interval;
+		_saf_timer[index].eventCode = eventCode;
+		_saf_timer[index].value= value;
+	}
+}
+
+void saf_cancelTimer(uint8_t eventCode, uint8_t value) {
+	for (uint8_t i=0; i<SAF_TIMER_SIZE; i++) {
+		if (_saf_timer[i].eventCode == eventCode && _saf_timer[i].value == value) {
+			_saf_timer[i].couter = 0;
 			break;
 		}
 	}
