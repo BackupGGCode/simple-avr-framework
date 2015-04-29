@@ -65,6 +65,6 @@ Jak napisać prosty program w SAF 2.0
 
 Projekty powiązane:
 
-http://code.google.com/p/jatmega/
+https://github.com/BackupGGCode/jatmega/
 
-http://code.google.com/p/avr-wav-interface/
+https://github.com/BackupGGCode/avr-wav-interface/
