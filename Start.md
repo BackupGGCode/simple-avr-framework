@@ -1,0 +1,33 @@
+# Wprowadzenie #
+
+Większość ludzi podejmujących się pisania programów dla mikrokontrolerów (czy to rodziny 51, czy AVR), niezależnie od języka jaki wybiorą do osiągnięcia swojego celu, robi to w mniej więcej taki sposób:
+
+Cel: wciskam przycisk, dioda świeci, puszczam przycisk dioda gaśnie
+Rozwiązanie:
+```
+while(1) {
+    if(is_bit_clear(...)) {
+        led_on();
+    } else {
+        led_off();
+    }
+}
+```
+
+Jeśli faktycznie tylko tyle ma robić kontroler to program jest poprawny, tylko po co do tak prostych zadań go stosować?
+
+No właśnie, przeważnie chodzi o coś innego... Zazwyczaj nie chodzi o jeden przycisk ale o całą klawiaturę lub o wyświetlacz graficzny a nie diodę. Do tego dochodzi jeszcze cały szereg różnych styczników, silników którymi trzeba sterować. Czasami nawet w grę wchodzi komunikacja z komputerem.
+
+Ilekroć w latach technikum, kiedy moja wiedza na temat elektroniki, przewyższała tą z programowania, wielokrotnie podejmowałem próby napisania dużych aplikacji właśnie w taki nieudolny sposób. Pisząc w asemblerze, to nawet ciężko jest pisać inaczej... Prowadzi to do sytuacji, gdzie tracimy kontrolę, nad tym co się dzieje w aplikacji, nie mamy możliwości przetestowania selektywnie części kodu, polecenia operujące na IO, są wymieszane z logiką działania, etc.
+
+Zastanawiałem się już wielokrotnie w jaki sposób rozwiązać, ten problem. Oto trzy ciekawe podejścia, z czego trzeci jest właśnie tym projektem:
+
+(dodam, że zajmuje się obecnie programowaniem ATMEGA)
+
+1. Uznałem, że warto oprogramować wszystkie peryferia mikrokontrolera, zamknąć je w klasy i w ten sposób składać aplikację jak z klocków. Faktycznie jest to pewnego rodzaju próba oddzielenia logiki od specyfiki działania kontrolera. Pomysł jednak okazał się dość żmudny i ostatecznie po programowaniu Timerów i UARTa zabrakło mi chęci do dalszej pracy (no i pamięci programu). Syzyf miał lepiej. Mnogość kontrolerów i ilość różnych peryferiów okazała się zbyt duża. Do tego jeszcze niektóre peryferia takie jak porty we/wy, były tak proste, że zamknięcie ich w klasy było przerostem formy nad treścią. Do tego jeszcze doszła duża objętość powstałego kodu. Nawet aplikacja, która nic nie robi, aby użyć kilku peryferiów, musi podłączyć kod ich oprogramowania. Dramat... ale pomysł ciekawy...
+
+2. Mój drugi pomysł, mimo bardzo długiej ścieżki myślowej :), był bardzo prosty. Mówi się że potrzeba jest matką wynalazków. Bzdura. Ja uważam, że lenistwo... Ponieważ ogólna opinia o C++ jest taka: C++ to język, w którym bohatersko pokonuje się trudności nieznane z innych języków programowania. Postanowiłem zbadać temat JAVA dla AVRów. Niestety dla mojego ubogiego ATMEGA168 (na którym obecnie się bawię) takie rozwiązanie nie wchodzi w grę. Postanowiłem więc napisać aplikację, której będzie się mówiło co ma robić za pośrednictwem połączenia szeregowego RS. Cała logika i interfejs użytkownika piszemy w JAVA, używając pewnych klas, które reprezentują polecenia mikrokontrolera. W ten sposób piszemy w JAVA a nie w C++. Całość wykonanego programu odbywa się w JAVA po stronie komutera, natomiast kontroler jest tylko ślepym wykonawcą naszej logiki. Ten pomysł jest nawet opublikowany na code.google.com pod nazwą JATMEGA. (dodano 2012-11-28: obecnie ten pomysł jednak powstał i jest opery o mniej pamięcio-żerne C a nie C++ oraz nowy SAF 2.0. JATMEGA ogranicza się na chwile obecną o operacje na pamięci, jednak jest to w zupełnosci wystarczające do budowania naprawdę złożonych operacji w JAVA bez dotykania C.)
+
+3. Nadszedł czas na wyciągnięcie wniosków z poprzednich lekcji... Tak powstał ten projekt. Pomysł znowu stary jak świat, jednak zastosowany w umiejętny sposób daje rewelacyjne wyniki. Ponieważ nie przepadam za C a w szczególności za #include, zastanawiałem się jak by to było, gdybyśmy nie musieli wszędzie pisać tego diabelskiego polecenia. Include tu, include tam, zawsze się gubię, gdzie potrzebuje jakiej referencji. Jak by na to popatrzeć z pewnej perspektywy, to ilość dyrektyw #include określa stopień powiązań jednej klasy z drugą. Oj, jeśli tego jest dużo to znaczy, że nie możemy wyciągnąć jednej fajnej klasy z projektu i dodać go do innego, bo za tym idzie zawsze cały szereg innych dodatków, od których nasz klasa jest uzależniona. Pewni ludzie już to przecież rozwiązali i nazwali to Invers of Controll (abo jakoś tak). Czyli klasy wiedzą o sobie, ale nie tworzą swoich powiązań. Robimy to z zewnątrz. Tak odbywa się to w świecie obiektów i w taki sposób zostało to też rozwiązane w wersji SAF 1.0 - 1.3. Projekt okazał się jednak zbyt obszerny po kompilacji i nie zostało wiele miejsca przy 8kB na cokolwiek innego. Nowa wersja SAF 2.0 mieści się poniżej 1kB i jest znacznie szybsza. W zamian za to zrezygnowałem z C++ i obiektów. Całość nadal bazuje, jak w poprzedniej wersji, na obiekcie EventBus, tyle że teraz wywołanie to nazywa sie saf\_addEventHandler() oraz saf\_eventBusSend() (wcześniej EventBus::get()->send()). Otrzymywać zdarzenia może dowolna metoda o deklaracji void mojaMetoda(saf\_Event event), należy jednak pamiętać o jej zarejestrowaniu jako słuchacza zdarzeń metodą saf\_addEventHandler(). Poprzednia wersja miała też obsługę onTick(), który był wywoływany co 255 taktów zegara i można było go wykorzystać do prostej obsługi np. badania stanów portów (klawiatura). W nowej wersji te dwa mechanizmy zostały połączone. Zamiast metody onTick, wysyłany jest do wszystkich event EVENT\_SAFTICK.
+
+Na koniec warto jeszcze powiedzieć, że kontroler jest przełączany w stan idel, wtedy kiedy to tylko możliwe, co prowadzi do mniejszego zużycia energii.  Od wersji 2.1 mamy też możliwość definiowania własnej struktury saf\_Event i przesyłania większej ilości informacji. Należy jednak pamiętać, że struktura ta jest wspólna dla wszystkich eventów i lepiej jest przekazywać większe informacje pamięcią współdzieloną pomiędzy modułami (plikami c). Takie podejście zostało zastosowane w projekcie jatmega od wersji 2.0.
